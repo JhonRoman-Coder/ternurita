@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QUIERO VERTE AMOR</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ffe5e5;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .container.active {
+      display: flex;
+    }
+
+    img {
+      max-width: 200px;
+      width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+
+    .btn a {
+      text-decoration: none;
+      color: #111;
+      background: #fff;
+      padding: 10px 25px;
+      border-radius: 8px;
+      box-shadow: 0.5rem 1rem 3rem rgba(0, 0, 0, 0.3);
+      font-weight: bold;
+      transition: all 0.3s ease;
+      min-width: 80px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    #btn-si {
+      z-index: 2;
+    }
+
+    @media (max-width: 480px) {
+      .btn {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Música de fondo -->
+  <audio autoplay loop>
+    <source src="musicaamor.mp4" type="audio/mp4">
+    Tu navegador no soporta audio.
+  </audio>
+
+  <!-- PÁGINA 1 -->
+  <div class="container active" id="inicio">
+    <img src="imagen1.jpg" alt="Imagen romántica" />
+    <h1>¿Podemos vernos hoy día Amor?</h1>
+    <p>Después de tus clases de inglés</p>
+    <div class="btn">
+      <a href="#si">SI</a>
+      <a href="#no1">NO</a>
+    </div>
+  </div>
+
+  <!-- PÁGINA 2 -->
+  <div class="container" id="no1">
+    <img src="imagen2.png" alt="Imagen romántica 2" />
+    <h1>¿Estás segura? Piénsalo bien amor ❤️</h1>
+    <div class="btn">
+      <a href="#si">SI</a>
+      <a href="#no2">NO</a>
+    </div>
+  </div>
+
+  <!-- PÁGINA 3 con efecto -->
+  <div class="container" id="no2">
+    <img src="imagen3.png" alt="Imagen romántica 3" />
+    <h1>¿Segura? ¿Muy segura amor?? 😢</h1>
+    <div class="btn" id="btn-container">
+      <a id="btn-si" href="#si">SI</a>
+      <a id="btn-no" href="javascript:void(0);">NO</a>
+    </div>
+  </div>
+
+  <!-- PÁGINA FINAL -->
+  <div class="container" id="si">
+    <img src="imagen4.png" alt="Imagen romántica 4" />
+    <h1>¡Siii! Lo sabía amor 🥰💖</h1>
+  </div>
+
+  <script>
+    // Navegación entre secciones
+    const sections = document.querySelectorAll(".container");
+    document.querySelectorAll("a[href^='#']").forEach(link => {
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        const targetId = link.getAttribute("href").substring(1);
+        sections.forEach(section => section.classList.remove("active"));
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) targetSection.classList.add("active");
+      });
+    });
+
+    // Efecto SI y NO
+    const btnSi = document.getElementById("btn-si");
+    const btnNo = document.getElementById("btn-no");
+    const btnContainer = document.getElementById("btn-container");
+
+    let siScale = 1;
+    let noScaled = false;
+    let noOffset = 0;
+
+    btnNo?.addEventListener("click", () => {
+      if (!noScaled) {
+        btnNo.style.transform = "scale(0.9)";
+        noScaled = true;
+      }
+
+      // Aumentar tamaño del SI
+      siScale += 0.5;
+      btnSi.style.transform = `scale(${Math.min(siScale, 20)})`;
+
+      // Mover el botón NO hacia un costado
+      noOffset += 40;
+      btnNo.style.position = "absolute";
+      btnNo.style.top = "50%";
+      btnNo.style.left = `${noOffset}px`;
+      btnNo.style.transform = "translateY(-50%) scale(0.9)";
+    });
+  </script>
+</body>
+</html>
