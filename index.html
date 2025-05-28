@@ -13,13 +13,12 @@
     }
 
     body {
-      width: 100%;
-      min-height: 100vh;
+      width: 100vw;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       background-color: #ffe5e5;
-      padding: 20px;
       overflow: hidden;
       position: relative;
     }
@@ -30,8 +29,7 @@
       align-items: center;
       text-align: center;
       gap: 20px;
-      max-width: 500px;
-      width: 100%;
+      width: 500px;
     }
 
     .container.active {
@@ -39,16 +37,20 @@
     }
 
     img {
-      max-width: 200px;
-      width: 100%;
+      width: 200px;
       height: auto;
       margin-bottom: 20px;
     }
 
     .btn {
-      position: relative;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
       width: 100%;
-      height: 200px;
+      height: auto;
+      position: relative;
+      flex-wrap: wrap;
     }
 
     .btn a {
@@ -62,40 +64,35 @@
       transition: all 0.3s ease;
       min-width: 80px;
       text-align: center;
-      position: absolute;
-      z-index: 1;
+      position: relative;
     }
 
-    #btn-si {
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 2;
+    /* Estilos especiales para #no2 */
+    #btn-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      height: 200px;
+      position: relative;
     }
 
-    #btn-no {
-      z-index: 1;
+    #btn-si, #btn-no {
+      transition: all 0.3s ease;
+      position: relative;
     }
 
-    @media (max-width: 480px) {
-      .btn {
-        height: 250px;
-      }
-
-      img {
-        max-width: 150px;
-      }
-    }
   </style>
 </head>
 <body>
-  <!-- Música de fondo (silenciada al inicio) -->
+  <!-- Música de fondo -->
   <audio id="bg-music" loop>
     <source src="musicaamor.mp4" type="audio/mp4">
     Tu navegador no soporta audio.
   </audio>
 
-  <!-- PÁGINAS -->
+  <!-- Sección 1 -->
   <div class="container active" id="inicio">
     <img src="imagen1.jpg" alt="Imagen romántica" />
     <h1>¿Podemos vernos hoy día Amor?</h1>
@@ -106,6 +103,7 @@
     </div>
   </div>
 
+  <!-- Sección 2 -->
   <div class="container" id="no1">
     <img src="imagen2.png" alt="Imagen romántica 2" />
     <h1>¿Estás segura? Piénsalo bien amor ❤️</h1>
@@ -115,6 +113,7 @@
     </div>
   </div>
 
+  <!-- Sección 3 con efecto especial -->
   <div class="container" id="no2">
     <img src="imagen3.png" alt="Imagen romántica 3" />
     <h1>¿Segura? ¿Muy segura amor?? 😢</h1>
@@ -124,9 +123,14 @@
     </div>
   </div>
 
+  <!-- Sección final -->
   <div class="container" id="si">
     <img src="imagen4.png" alt="Imagen romántica 4" />
     <h1>¡Siii! Lo sabía amor 🥰💖</h1>
+    <div class="btn">
+      <a href="#inicio">VOLVER A PREGUNTAR</a>
+      <a href="#no1">NO</a>
+    </div>
   </div>
 
   <script>
@@ -134,7 +138,6 @@
     const links = document.querySelectorAll("a[href^='#']");
     const audio = document.getElementById("bg-music");
 
-    // Activar música al primer clic en cualquier parte
     let musicStarted = false;
     document.body.addEventListener("click", () => {
       if (!musicStarted) {
@@ -143,7 +146,6 @@
       }
     });
 
-    // Navegación
     links.forEach(link => {
       link.addEventListener("click", e => {
         e.preventDefault();
@@ -154,36 +156,36 @@
       });
     });
 
-    // Efecto especial en la pantalla no2
+    // Efecto especial para #no2
     const btnSi = document.getElementById("btn-si");
     const btnNo = document.getElementById("btn-no");
     const btnContainer = document.getElementById("btn-container");
 
     let siScale = 1;
-    let moveInterval;
+    let clickedOnce = false;
 
     function moverBtnNo() {
       const containerRect = btnContainer.getBoundingClientRect();
       const maxX = containerRect.width - btnNo.offsetWidth;
       const maxY = containerRect.height - btnNo.offsetHeight;
-
       const randX = Math.floor(Math.random() * maxX);
       const randY = Math.floor(Math.random() * maxY);
-
+      btnNo.style.position = "absolute";
       btnNo.style.left = randX + "px";
       btnNo.style.top = randY + "px";
     }
 
     if (btnNo && btnSi) {
-      btnNo.addEventListener("mouseenter", () => {
-        moverBtnNo();
-
-        siScale += 0.5;
-        btnSi.style.transform = `translate(-50%, -50%) scale(${Math.min(siScale, 20)})`;
-
-        // Si no está corriendo el bucle, lo iniciamos
-        if (!moveInterval) {
-          moveInterval = setInterval(moverBtnNo, 800);
+      btnNo.addEventListener("click", () => {
+        if (!clickedOnce) {
+          // Primer clic: reducir tamaño del NO
+          btnNo.style.transform = "scale(0.7)";
+          clickedOnce = true;
+        } else {
+          // Clics siguientes: mover NO, crecer SI
+          moverBtnNo();
+          siScale += 0.5;
+          btnSi.style.transform = `scale(${siScale})`;
         }
       });
     }
