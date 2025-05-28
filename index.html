@@ -21,6 +21,7 @@
       background-color: #ffe5e5;
       padding: 20px;
       overflow: hidden;
+      position: relative;
     }
 
     .container {
@@ -47,10 +48,7 @@
     .btn {
       position: relative;
       width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 25px;
-      flex-wrap: wrap;
+      height: 200px;
     }
 
     .btn a {
@@ -64,30 +62,40 @@
       transition: all 0.3s ease;
       min-width: 80px;
       text-align: center;
-      position: relative;
+      position: absolute;
       z-index: 1;
     }
 
     #btn-si {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
       z-index: 2;
+    }
+
+    #btn-no {
+      z-index: 1;
     }
 
     @media (max-width: 480px) {
       .btn {
-        flex-direction: column;
-        gap: 15px;
+        height: 250px;
+      }
+
+      img {
+        max-width: 150px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Música de fondo -->
-  <audio autoplay loop>
+  <!-- Música de fondo (silenciada al inicio) -->
+  <audio id="bg-music" loop>
     <source src="musicaamor.mp4" type="audio/mp4">
     Tu navegador no soporta audio.
   </audio>
 
-  <!-- PÁGINA 1 -->
+  <!-- PÁGINAS -->
   <div class="container active" id="inicio">
     <img src="imagen1.jpg" alt="Imagen romántica" />
     <h1>¿Podemos vernos hoy día Amor?</h1>
@@ -98,7 +106,6 @@
     </div>
   </div>
 
-  <!-- PÁGINA 2 -->
   <div class="container" id="no1">
     <img src="imagen2.png" alt="Imagen romántica 2" />
     <h1>¿Estás segura? Piénsalo bien amor ❤️</h1>
@@ -108,7 +115,6 @@
     </div>
   </div>
 
-  <!-- PÁGINA 3 con efecto -->
   <div class="container" id="no2">
     <img src="imagen3.png" alt="Imagen romántica 3" />
     <h1>¿Segura? ¿Muy segura amor?? 😢</h1>
@@ -118,51 +124,69 @@
     </div>
   </div>
 
-  <!-- PÁGINA FINAL -->
   <div class="container" id="si">
     <img src="imagen4.png" alt="Imagen romántica 4" />
     <h1>¡Siii! Lo sabía amor 🥰💖</h1>
   </div>
 
   <script>
-    // Navegación entre secciones
     const sections = document.querySelectorAll(".container");
-    document.querySelectorAll("a[href^='#']").forEach(link => {
+    const links = document.querySelectorAll("a[href^='#']");
+    const audio = document.getElementById("bg-music");
+
+    // Activar música al primer clic en cualquier parte
+    let musicStarted = false;
+    document.body.addEventListener("click", () => {
+      if (!musicStarted) {
+        audio.play().catch(() => {});
+        musicStarted = true;
+      }
+    });
+
+    // Navegación
+    links.forEach(link => {
       link.addEventListener("click", e => {
         e.preventDefault();
         const targetId = link.getAttribute("href").substring(1);
-        sections.forEach(section => section.classList.remove("active"));
+        sections.forEach(s => s.classList.remove("active"));
         const targetSection = document.getElementById(targetId);
         if (targetSection) targetSection.classList.add("active");
       });
     });
 
-    // Efecto SI y NO
+    // Efecto especial en la pantalla no2
     const btnSi = document.getElementById("btn-si");
     const btnNo = document.getElementById("btn-no");
     const btnContainer = document.getElementById("btn-container");
 
     let siScale = 1;
-    let noScaled = false;
-    let noOffset = 0;
+    let moveInterval;
 
-    btnNo?.addEventListener("click", () => {
-      if (!noScaled) {
-        btnNo.style.transform = "scale(0.9)";
-        noScaled = true;
-      }
+    function moverBtnNo() {
+      const containerRect = btnContainer.getBoundingClientRect();
+      const maxX = containerRect.width - btnNo.offsetWidth;
+      const maxY = containerRect.height - btnNo.offsetHeight;
 
-      // Aumentar tamaño del SI
-      siScale += 0.5;
-      btnSi.style.transform = `scale(${Math.min(siScale, 20)})`;
+      const randX = Math.floor(Math.random() * maxX);
+      const randY = Math.floor(Math.random() * maxY);
 
-      // Mover el botón NO hacia un costado
-      noOffset += 40;
-      btnNo.style.position = "absolute";
-      btnNo.style.top = "50%";
-      btnNo.style.left = `${noOffset}px`;
-      btnNo.style.transform = "translateY(-50%) scale(0.9)";
-    });
+      btnNo.style.left = randX + "px";
+      btnNo.style.top = randY + "px";
+    }
+
+    if (btnNo && btnSi) {
+      btnNo.addEventListener("mouseenter", () => {
+        moverBtnNo();
+
+        siScale += 0.5;
+        btnSi.style.transform = `translate(-50%, -50%) scale(${Math.min(siScale, 20)})`;
+
+        // Si no está corriendo el bucle, lo iniciamos
+        if (!moveInterval) {
+          moveInterval = setInterval(moverBtnNo, 800);
+        }
+      });
+    }
   </script>
 </body>
 </html>
